@@ -1,0 +1,20 @@
+- set_fact:
+    smi_gpg_key_dir: "{{ smi_context_path }}/gpg"
+
+- name: Check GPG key directory exists
+  stat:
+    path: "{{ smi_gpg_key_dir }}"
+  register: smi_gpg_key_dir_stat
+
+- name: Enable GPG keys
+  when: smi_gpg_key_dir_stat.stat.exists
+  block:
+  - name: Find GPG key files
+    find:
+      path: "{{ smi_gpg_key_dir }}"
+      file_type: file
+    register: smi_gpg_key_files
+
+  - name: Import GPG key files
+    command: "gpg --import {{ item.path }}"
+    loop: "{{ smi_gpg_key_files.files }}"

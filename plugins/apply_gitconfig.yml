@@ -1,0 +1,12 @@
+---
+- name: Check if a Git config file exists
+  stat:
+    path: "{{ smi_context_path }}/gitconfig"
+  register: smi_git_config_file
+
+- name: Apply the Git config
+  ansible.builtin.copy:
+    src: "{{ smi_context_path }}/gitconfig"
+    dest: ~/.gitconfig
+    mode: '0644'
+  when: smi_git_config_file.stat.exists

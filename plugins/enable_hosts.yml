@@ -1,0 +1,15 @@
+- set_fact:
+    smi_hosts_file: "{{ smi_context_path }}/hosts"
+
+- name: Check hosts file exists
+  stat:
+    path: "{{ smi_hosts_file }}"
+  register: smi_hosts_file_stat
+
+- name: Set hosts configs
+  blockinfile:
+    path: /etc/hosts
+    block: "{{ lookup('file', smi_hosts_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+  become: yes
+  when: smi_hosts_file_stat.stat.exists

@@ -1,0 +1,15 @@
+- set_fact:
+    smi_pgpass_file: "{{ smi_context_path }}/pgpass"
+
+- name: Check pgpass file exists
+  stat:
+    path: "{{ smi_pgpass_file }}"
+  register: smi_pgpass_file_stat
+
+- name: Set pgpass configs
+  blockinfile:
+    path: ~/.pgpass
+    block: "{{ lookup('file', smi_pgpass_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+    create: yes
+  when: smi_pgpass_file_stat.stat.exists

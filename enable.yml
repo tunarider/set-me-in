@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  vars:
+    smi_context: ""
+  tasks:
+  - set_fact:
+      smi_context_path: "{{ playbook_dir }}/context/{{ smi_context }}"
+
+  - name: Find plugins
+    find:
+      path: "{{ playbook_dir }}/plugins/"
+      file_type: file
+      patterns: enable_*
+    register: smi_enable_plugin_files
+      
+  - name: Enable plugins
+    include_tasks: "{{ outer_item.path }}"
+    loop: "{{ smi_enable_plugin_files.files}}"
+    loop_control:
+      loop_var: outer_item

@@ -1,0 +1,15 @@
+- set_fact:
+    smi_saml2aws_file: "{{ smi_context_path }}/saml2aws"
+
+- name: Check saml2aws file exists
+  stat:
+    path: "{{ smi_saml2aws_file }}"
+  register: smi_saml2aws_file_stat
+
+- name: Set saml2aws configs
+  blockinfile:
+    path: ~/.saml2aws
+    block: "{{ lookup('file', smi_saml2aws_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+    create: yes
+  when: smi_saml2aws_file_stat.stat.exists

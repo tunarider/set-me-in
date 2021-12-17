@@ -1,0 +1,39 @@
+- name: Check if a SSH key directory exists
+  stat:
+    path: "{{ smi_context_path }}/ssh"
+  register: smi_ssh_key_dir
+
+- name: Apply SSH keys
+  when: smi_ssh_key_dir.stat.exists
+  block:
+  - name: Create target directory
+    file:
+      path: ~/.ssh
+      state: directory
+
+  - name: Find SSH private key links
+    find:
+      path: "{{ smi_context_path }}/ssh"
+      file_type: link
+      pattern: "id_rsa"
+    register: smi_ssh_key_links
+
+  - name: Copy SSH private key links
+    ansible.builtin.copy:
+      src: "{{ item.path }}"
+      dest: ~/.ssh
+      mode: '0600'
+    loop: "{{ smi_ssh_key_links.files }}"
+
+  - name: Find SSH public key links
+    find:
+      path: "{{ smi_context_path }}/ssh"
+      file_type: link
+      pattern: "id_rsa.pub"
+    register: smi_ssh_key_links
+
+  - name: Copy SSH public key links
+    ansible.builtin.copy:
+      src: "{{ item.path }}"
+      dest: ~/.ssh
+    loop: "{{ smi_ssh_key_links.files }}"

@@ -1,0 +1,34 @@
+- set_fact:
+    smi_aws_config_file: "{{ smi_context_path }}/aws_config"
+    smi_aws_credentials_file: "{{ smi_context_path }}/aws_credentials"
+
+- name: Check AWS config file exists
+  stat:
+    path: "{{ smi_aws_config_file }}"
+  register: smi_aws_config_file_stat
+
+- name: Create target directory
+  file:
+    path: ~/.aws
+    state: directory
+
+- name: Set AWS config
+  blockinfile:
+    path: ~/.aws/config
+    block: "{{ lookup('file', smi_aws_config_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+    create: yes
+  when: smi_aws_config_file_stat.stat.exists
+
+- name: Check AWS credentials file exists
+  stat:
+    path: "{{ smi_aws_credentials_file }}"
+  register: smi_aws_credentials_file_stat
+
+- name: Set AWS credentials
+  blockinfile:
+    path: ~/.aws/credentials
+    block: "{{ lookup('file', smi_aws_credentials_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+    create: yes
+  when: smi_aws_credentials_file_stat.stat.exists

@@ -1,0 +1,21 @@
+- set_fact:
+    smi_ssh_config_file: "{{ smi_context_path }}/ssh_config"
+
+- name: Check SSH config file exists
+  stat:
+    path: "{{ smi_ssh_config_file }}"
+  register: smi_ssh_config_file_stat
+
+- name: Create target directory
+  file:
+    path: ~/.ssh
+    state: directory
+
+- name: Set SSH config
+  blockinfile:
+    path: ~/.ssh/config
+    block: "{{ lookup('file', smi_ssh_config_file) }}"
+    marker: "# {mark} ANSIBLE MANAGED CONTEXT BLOCK ({{ smi_context }})"
+    create: yes
+    mode: 0600
+  when: smi_ssh_config_file_stat.stat.exists

@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- hosts: all
+  connection: local
   vars:
     smi_context: ""
   tasks:

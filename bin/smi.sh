@@ -28,10 +28,10 @@ _comp-$CMD_NAME() {
 $CMD_NAME() {
     case $1 in
         apply)
-            ansible-playbook $BASEDIR/../apply.yml --extra-vars "smi_context='$2'"
+            ansible-playbook $BASEDIR/../apply.yml --extra-vars "smi_context='$2'" -i localhost,
             ;;
         enable)
-            ansible-playbook $BASEDIR/../enable.yml --extra-vars "smi_context='$2'" -K
+            ansible-playbook $BASEDIR/../enable.yml --extra-vars "smi_context='$2'" -K -i localhost,
             ;;
         cat)
             if [ $# -eq 3 ]; then
